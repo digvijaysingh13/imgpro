@@ -58,11 +58,11 @@ func ReadFile(filePath string) (*[]byte, error) {
 * transformation is coverted by assuming that supplied bytes are big endian
  */
 
-func BytesToUnsignInt(byt *[]byte) int {
+func BytesToUnsignInt(byt *[]byte) uint {
 	if byt == nil {
 		return 0
 	}
-	result := 0
+	var result uint = 0
 	len := len(*byt)
 	if len == 0 {
 		return 0
@@ -71,8 +71,7 @@ func BytesToUnsignInt(byt *[]byte) int {
 	for index < len {
 		b := (*byt)[index]
 		// changing negative sign to postive if any by making 2's compliment
-		b = b & 0xff
-		bInt := int(b)
+		bInt := uint(b)
 		bInt = bInt << (index * 8)
 		result = result | bInt
 		index += 1
@@ -92,4 +91,14 @@ func AvgGrayscale(red, blue, green byte) byte {
 func LuminousGrayscale(red, blue, green byte) byte {
 	var lim float32 = (0.3 * float32(red)) + (0.59 * float32(green)) + (0.11 * float32(blue))
 	return byte(lim)
+}
+
+func WriteFile(filename string, data *[]byte) error {
+	file, err := CreateFile(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	_, err = file.Write(*data)
+	return err
 }
