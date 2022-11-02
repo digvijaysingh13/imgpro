@@ -41,7 +41,12 @@ func CreateFile(filename string) (*os.File, error) {
 		return nil, err
 	}
 	filename = filepath.Join(outputDir, filename)
-	return os.Create(filename)
+	_, err = os.Stat(filename)
+	if os.IsNotExist(err) {
+		return os.Create(filename)
+	}
+	file, err := os.OpenFile(filename, os.O_WRONLY, os.ModePerm)
+	return file, err
 }
 
 /*
@@ -81,18 +86,20 @@ func BytesToUnsignInt(byt *[]byte) uint {
 
 // equal importance is given to all RGB colors
 // take RGB values and calculates it average and returns it
-func AvgGrayscale(red, blue, green byte) byte {
+func AvgGrayscale(red, green, blue byte) byte {
 	var avg int = (int(red) + int(blue) + int(green)) / 3
 	return byte(avg)
 }
 
 // since human eyes are more sensitive to green, than red than blue
 // 0.59 importance for green, 0.3 for red and 0.11 for blue
-func LuminousGrayscale(red, blue, green byte) byte {
+func LuminousGrayscale(red, green, blue byte) byte {
 	var lim float32 = (0.3 * float32(red)) + (0.59 * float32(green)) + (0.11 * float32(blue))
 	return byte(lim)
 }
 
+// creates file in imgpro-out dir
+// writes content in that file
 func WriteFile(filename string, data *[]byte) error {
 	file, err := CreateFile(filename)
 	if err != nil {
@@ -101,4 +108,17 @@ func WriteFile(filename string, data *[]byte) error {
 	defer file.Close()
 	_, err = file.Write(*data)
 	return err
+}
+
+// converts int into byte slice of desire len
+func IntToBytes(value int, len int) []byte {
+	bytes := make([]byte, len)
+	// encoding should be perform in big endian
+	for i := 0; i < len; i++ {
+		a := value << (i * 8)
+		a = a >> 24
+		b := byte(a)
+		bytes[len-1-i] = b
+	}
+	return bytes
 }

@@ -212,6 +212,7 @@ func (b *Bmp) Copy() *Bmp {
 	return &bmp
 }
 
+// removes the color
 func MakeRed(bmp *Bmp) {
 	// 0th index is blue, 1st is green, 2nd is red
 	bmp.EachPixel(func(b *[]byte) {
@@ -236,5 +237,16 @@ func MakeBlue(bmp *Bmp) {
 		byt := *b
 		byt[1] = 0
 		byt[2] = 0
+	})
+}
+
+func MakeGray(bmp *Bmp) {
+	// 0th index is blue, 1st is green, 2nd is red
+	bmp.EachPixel(func(b *[]byte) {
+		byt := *b
+		color := util.LuminousGrayscale(byt[2], byt[1], byt[0])
+		byt[0] = color
+		byt[1] = color
+		byt[2] = color
 	})
 }

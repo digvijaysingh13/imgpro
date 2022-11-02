@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	filename := "/home/digvijaysingh/Desktop/sample_file.bmp"
+	filename := "/home/digvijaysingh/Downloads/tiger.bmp"
 	data, err := util.ReadFile(filename)
 	if err != nil {
 		fmt.Println(err)
@@ -16,35 +16,18 @@ func main() {
 	}
 	img := bmp.NewBmp(data)
 	createDiffRgb(&img)
-	img.PrintHeader()
 }
 
 func createDiffRgb(img *bmp.Bmp) {
-	// save red
-	red := img.Copy()
-	bmp.MakeRed(red)
-	err := util.WriteFile("sample_red1.bmp", red.Data)
+	// save gray
+	gray := img.Copy()
+	bmp.MakeGray(gray)
+	err := util.WriteFile("sample_red1.bmp", gray.Data)
 	if err == nil {
-		println("red file created")
+		fmt.Println("gray file created")
 	} else {
-		println(err)
+		fmt.Println(err)
 	}
-	// save green
-	green := img.Copy()
-	bmp.MakeGreen(green)
-	err = util.WriteFile("sample_green1.bmp", green.Data)
-	if err == nil {
-		println("green file created")
-	} else {
-		println(err)
-	}
-	// save blue
-	blue := img.Copy()
-	bmp.MakeBlue(blue)
-	err = util.WriteFile("sample_blue1.bmp", blue.Data)
-	if err == nil {
-		println("blue file created")
-	} else {
-		println(err)
-	}
+
+	//
 }
